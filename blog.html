@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog | BrightPath Blog</title>
+  <link rel="stylesheet" href="styles.css?v=20260606-blog-photos-clean" />
+</head>
+<body class="magazine-blog-page">
+  <header class="site-header magazine-site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">BrightPath</a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a class="active" href="blog.html">Blog</a>
+        <a href="publish.html">Publish</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Turn dark mode on" aria-pressed="false">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="magazine-shell">
+    <section class="magazine-masthead" aria-label="Blog masthead">
+      <div class="magazine-topline">
+        <div class="magazine-mini-tools" aria-hidden="true">
+          <span>Search</span>
+          <span>Menu</span>
+        </div>
+        <div class="magazine-socials" aria-label="Social links">
+          <a href="contact.html">Mail</a>
+          <a href="rss.xml">RSS</a>
+        </div>
+      </div>
+      <a class="magazine-logo" href="blog.html">BRIGHT<span>PATH</span></a>
+      <p>Multipurpose personal website and blog website</p>
+    </section>
+
+    <nav class="magazine-nav" aria-label="Blog category navigation">
+      <button class="filter-btn active" type="button" data-filter="all">All</button>
+      <button class="filter-btn" type="button" data-filter="tech-blog">Tech</button>
+      <button class="filter-btn" type="button" data-filter="gaming-blog">Gaming</button>
+      <button class="filter-btn" type="button" data-filter="travel-blog">Travel</button>
+      <button class="filter-btn" type="button" data-filter="school-tips-blog">School Tips</button>
+      <button class="filter-btn" type="button" data-filter="anime-movie-blog">Anime/Movie</button>
+      <button class="filter-btn" type="button" data-filter="food-blog">Food</button>
+      <button class="filter-btn" type="button" data-filter="personal-diary">Diary</button>
+      <button class="filter-btn" type="button" data-filter="programming-tutorials">Programming</button>
+    </nav>
+
+    <section class="magazine-search-row" aria-label="Search posts">
+      <label>
+        Search stories
+        <input id="post-search" type="search" placeholder="Search by title, topic, or category" />
+      </label>
+      <div class="magazine-actions">
+        <a class="magazine-pill" href="publish.html">Publish</a>
+        <a class="magazine-pill" href="rss.xml">RSS Feed</a>
+      </div>
+    </section>
+
+    <section class="magazine-feature" id="featured-story" aria-label="Featured story">
+      <p class="empty-state">Loading featured post...</p>
+    </section>
+
+    <section class="magazine-stories" aria-label="Latest stories">
+      <p class="magazine-kicker">Browse and read the latest stuff</p>
+      <h1>Latest Stories</h1>
+      <div class="magazine-grid" id="blog-list">
+        <p class="empty-state" id="empty-state">No posts match your search.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer magazine-footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 BrightPath. By Christian V. Tuazon.</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('brightpath-theme');
+    if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+    document.querySelectorAll('.theme-toggle').forEach((button) => {
+      const updateToggle = () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.setAttribute('aria-label', isDark ? 'Turn dark mode off' : 'Turn dark mode on');
+        button.querySelector('.toggle-text').textContent = isDark ? 'Light' : 'Dark';
+      };
+      button.addEventListener('click', () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        if (isDark) {
+          delete document.documentElement.dataset.theme;
+          localStorage.setItem('brightpath-theme', 'light');
+        } else {
+          document.documentElement.dataset.theme = 'dark';
+          localStorage.setItem('brightpath-theme', 'dark');
+        }
+        updateToggle();
+      });
+      updateToggle();
+    });
+  </script>
+  <script src="posts-data.js?v=20260606"></script>
+  <script>
+    const searchInput = document.getElementById('post-search');
+    const filterButtons = document.querySelectorAll('.magazine-nav .filter-btn');
+    const blogList = document.getElementById('blog-list');
+    const emptyState = document.getElementById('empty-state');
+    const featuredStory = document.getElementById('featured-story');
+    let posts = [];
+    let activeFilter = 'all';
+
+    function postUrl(post) {
+      return `post.html?id=${encodeURIComponent(post.id)}`;
+    }
+
+    function renderFeatured(sourcePosts) {
+      const featured = sourcePosts[0];
+      if (!featured) {
+        featuredStory.innerHTML = '<p class="empty-state">No featured post yet.</p>';
+        return;
+      }
+
+      featuredStory.innerHTML = `
+        <div class="magazine-feature-frame">
+          <div class="magazine-feature-card">
+            <p class="magazine-meta">${BlogStore.escape(featured.date)} - Featured - ${BlogStore.escape(featured.categoryLabel)}</p>
+            <h2><a href="${postUrl(featured)}">${BlogStore.escape(featured.title)}</a></h2>
+            <p>${BlogStore.escape(featured.excerpt)}</p>
+            <a class="magazine-read" href="${postUrl(featured)}">Read more</a>
+          </div>
+          <a class="magazine-feature-image" href="${postUrl(featured)}">
+            <img src="${BlogStore.escape(featured.image)}" alt="${BlogStore.escape(featured.imageAlt)}" />
+          </a>
+        </div>
+      `;
+    }
+
+    function renderPosts() {
+      document.querySelectorAll('.magazine-story-card').forEach((post) => post.remove());
+      const postMarkup = posts.map((post) => `
+        <article class="magazine-story-card" data-category="${BlogStore.escape(post.category)}">
+          <a class="magazine-story-image" href="${postUrl(post)}">
+            <img src="${BlogStore.escape(post.image)}" alt="${BlogStore.escape(post.imageAlt)}" />
+          </a>
+          <h2><a href="${postUrl(post)}">${BlogStore.escape(post.title)}</a></h2>
+          <p class="magazine-meta">${BlogStore.escape(post.date)} - ${BlogStore.escape(post.categoryLabel)}</p>
+          <p>${BlogStore.escape(post.excerpt)}</p>
+          <a class="magazine-read" href="${postUrl(post)}">Read more</a>
+        </article>
+      `).join('');
+
+      blogList.insertAdjacentHTML('afterbegin', postMarkup);
+    }
+
+    function updatePosts() {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      const postCards = document.querySelectorAll('.magazine-story-card');
+      let visibleCount = 0;
+
+      postCards.forEach((post) => {
+        const matchesFilter = activeFilter === 'all' || post.dataset.category === activeFilter;
+        const matchesSearch = post.textContent.toLowerCase().includes(searchTerm);
+        const shouldShow = matchesFilter && matchesSearch;
+        post.hidden = !shouldShow;
+        if (shouldShow) visibleCount += 1;
+      });
+
+      emptyState.hidden = visibleCount !== 0;
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        filterButtons.forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        activeFilter = button.dataset.filter;
+        updatePosts();
+      });
+    });
+
+    searchInput.addEventListener('input', updatePosts);
+
+    async function initBlog() {
+      emptyState.textContent = 'Loading posts...';
+      emptyState.hidden = false;
+      posts = await BlogStore.getPosts();
+      emptyState.textContent = 'No posts match your search.';
+      renderFeatured(posts);
+      renderPosts();
+      updatePosts();
+    }
+
+    initBlog();
+  </script>
+</body>
+</html>
