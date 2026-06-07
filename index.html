@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrightPath Blog | Home</title>
+  <link rel="icon" type="image/jpeg" href="FullLogo_Transparent_NoBuffer.png" />
+  <link rel="stylesheet" href="styles.css?v=20260606-home-responsive-fast" />
+</head>
+<body class="home-editorial-page">
+      <header class="site-header home-shared-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html">BrightPath</a>
+        <nav>
+          <a class="active" href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="blog.html">Blog</a>
+          <a href="publish.html">Publish</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <button class="theme-toggle" type="button" aria-label="Turn dark mode on" aria-pressed="false">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-text">Dark</span>
+        </button>
+      </div>
+    </header>
+
+  <main class="home-editorial-shell">
+
+
+    <section class="home-editorial-hero">
+      <div class="home-feature-story">
+        <article class="home-feature-backdrop">
+          <div class="home-feature-overlay-card">
+            <p class="eyebrow">Featured post</p>
+            <a class="home-latest-image" id="home-latest-image-link" href="blog.html"><img id="home-latest-image" src="upscalemedia-transformed.jpg" alt="Latest blog image" /></a>
+            <h1 id="home-latest-title">Build your website, publish your story, and grow with confidence.</h1>
+            <p id="home-latest-excerpt">BrightPath shares clear tutorials and project notes for makers who want a clean blog, a polished portfolio, and a simple publishing routine.</p>
+            <a class="home-latest-link" id="home-latest-link" href="blog.html">Read article</a>
+          </div>
+        </article>
+        <div class="hero-actions">
+          <a class="btn" href="blog.html">Read latest posts</a>
+          <a class="btn btn-secondary" href="about.html">Meet the author</a>
+        </div>
+        <div class="hero-stats" aria-label="Website highlights">
+            <div><strong>5</strong><span>Core pages</span></div>
+            <div><strong id="home-post-count">3</strong><span>Total posts</span></div>
+            <div><strong>100%</strong><span>Responsive</span></div>
+        </div>
+      </div>
+
+      <aside class="home-recent-panel" aria-label="Featured and recent posts">
+        <h2>Recent articles</h2>
+
+        <div class="home-recent-list" id="home-recent-posts"></div>
+      </aside>
+    </section>
+
+    <section class="home-essentials-section features">
+      <article>
+        <p class="section-label">Project essentials</p>
+        <h2>What a complete blog website should include</h2>
+        <p>Practical guidance for front-end learners, creators building personal sites, and anyone who wants a blog that looks polished without being complicated.</p>
+      </article>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Website projects</h3>
+          <p>Step-by-step examples for landing pages, blog layouts, and portfolio templates.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Writing habits</h3>
+          <p>Simple systems that help you publish regularly without burning out.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Design feedback</h3>
+          <p>Small improvements that make your pages cleaner, faster, and easier to read.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="newsletter-strip home-newsletter">
+      <div>
+        <p class="section-label">Reader feature</p>
+        <h2>Get new notes when fresh guides are published.</h2>
+      </div>
+      <form id="newsletter-form">
+        <input type="email" placeholder="Email address" aria-label="Email address" />
+        <button class="btn" type="submit">Subscribe</button>
+      </form>
+      <p class="form-note" id="newsletter-note" hidden>Thanks. You are on the reader list.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer home-footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 BrightPath. By Christian V. Tuazon.</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="blog.html">Blog</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('brightpath-theme');
+    if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+    document.querySelectorAll('.theme-toggle').forEach((button) => {
+      const updateToggle = () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.setAttribute('aria-label', isDark ? 'Turn dark mode off' : 'Turn dark mode on');
+        button.querySelector('.toggle-text').textContent = isDark ? 'Light' : 'Dark';
+      };
+      button.addEventListener('click', () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        if (isDark) {
+          delete document.documentElement.dataset.theme;
+          localStorage.setItem('brightpath-theme', 'light');
+        } else {
+          document.documentElement.dataset.theme = 'dark';
+          localStorage.setItem('brightpath-theme', 'dark');
+        }
+        updateToggle();
+      });
+      updateToggle();
+    });
+  </script>
+  <script src="posts-data.js?v=20260607-fast-online"></script>
+  <script>
+    function paintHomePosts(homePosts) {
+      const recentPosts = homePosts.slice(1, 7);
+      const recentContainer = document.getElementById('home-recent-posts');
+      const postCount = document.getElementById('home-post-count');
+      const latestTitle = document.getElementById('home-latest-title');
+      const latestExcerpt = document.getElementById('home-latest-excerpt');
+      const latestLink = document.getElementById('home-latest-link');
+      const latestImage = document.getElementById('home-latest-image');
+      const latestImageLink = document.getElementById('home-latest-image-link');
+
+      postCount.textContent = homePosts.length;
+
+      if (homePosts.length) {
+        const featured = homePosts[0];
+        latestTitle.textContent = featured.title;
+        latestExcerpt.textContent = featured.excerpt;
+        latestLink.href = `post.html?id=${encodeURIComponent(featured.id)}`;
+        latestImage.src = featured.image;
+        latestImage.alt = featured.imageAlt;
+        latestImageLink.href = `post.html?id=${encodeURIComponent(featured.id)}`;
+
+      }
+
+      recentContainer.innerHTML = recentPosts.map((post) => {
+        const authorMarkup = post.authorName ? `
+          <div class="home-author-row home-author-row-small">
+            <span class="home-avatar">${BlogStore.escape(post.authorInitials || 'CT')}</span>
+            <span>${BlogStore.escape(post.authorName)}</span>
+          </div>
+        ` : '';
+
+        return `
+          <article class="home-recent-item">
+            <img src="${BlogStore.escape(post.image)}" alt="${BlogStore.escape(post.imageAlt)}" />
+            <div>
+              <h3><a href="post.html?id=${encodeURIComponent(post.id)}">${BlogStore.escape(post.title)}</a></h3>
+              <p class="meta">${BlogStore.escape(post.date)} - ${BlogStore.escape(post.categoryLabel)}</p>
+              ${authorMarkup}
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function renderHomePosts() {
+      const homePosts = await BlogStore.getPosts();
+      paintHomePosts(homePosts);
+    }
+
+    renderHomePosts();
+
+    document.getElementById('newsletter-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      document.getElementById('newsletter-note').hidden = false;
+      this.reset();
+    });
+  </script>
+</body>
+</html>
