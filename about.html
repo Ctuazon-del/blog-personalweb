@@ -200,7 +200,7 @@
       const updateToggle = () => {
         const isDark = document.documentElement.dataset.theme === 'dark';
         button.setAttribute('aria-pressed', String(isDark));
-        button.setAttribute('aria-label', isDark ? 'Turn dark mode off' : 'Turn dark mode on');
+        button.setAttribute('aria-label', isDark ? 'Turn dark mode off' : 'Turn dark mode on'); 
         button.querySelector('.toggle-text').textContent = isDark ? 'Light' : 'Dark';
       };
       button.addEventListener('click', () => {
