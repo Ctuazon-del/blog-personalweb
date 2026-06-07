@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publish | BrightPath Blog</title>
+  <link rel="icon" type="image/jpeg" href="FullLogo_Transparent_NoBuffer.png"  />
+  <link rel="stylesheet" href="styles.css?v=20260606-publish-container-center" />
+</head>
+<body class="publish-quote-page">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">BrightPath</a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="blog.html">Blog</a>
+        <a class="active" href="publish.html">Publish</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Turn dark mode on" aria-pressed="false">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container page-content">
+    <section class="page-hero">
+      <p class="eyebrow">Blog editor</p>
+      <h1>Share your ideas with the world.</h1>
+      <p>Write the post here, choose a category, and it will appear automatically on the blog page.</p>
+    </section>
+
+    <section class="content-block">
+      <form class="publish-form" id="publish-form">
+        <div class="approval-box">
+          <p class="section-label">Publishing permission</p>
+          <p>Owner posts publish immediately. Guest posts are sent as an approval request first.</p>
+          <label>
+            Owner passcode
+            <input type="password" id="owner-passcode" placeholder="Leave blank if you are requesting approval" />
+          </label>
+        </div>
+        <label>
+          Title
+          <input type="text" id="publish-title" placeholder="Post title" required />
+        </label>
+        <label>
+          Category
+          <select id="publish-category" required>
+            <option value="tech-blog">Tech Blog</option>
+            <option value="gaming-blog">Gaming Blog</option>
+            <option value="travel-blog">Travel Blog</option>
+            <option value="school-tips-blog">School Tips Blog</option>
+            <option value="anime-movie-blog">Anime/Movie Blog</option>
+            <option value="food-blog">Food Blog</option>
+            <option value="personal-diary">Personal Diary</option>
+            <option value="programming-tutorials">Programming Tutorials</option>
+            <option value="portfolio">Portfolio</option>
+            <option value="writing">Writing</option>
+            <option value="ux">UX</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>
+          Blog photo
+          <input type="file" id="publish-image" accept="image/*" />
+        </label>
+        <div class="image-preview" id="image-preview" hidden>
+          <img id="preview-image" alt="Selected blog preview" />
+        </div>
+        <label>
+          Short preview
+          <textarea id="publish-excerpt" rows="3" placeholder="Short summary for the blog page" required></textarea>
+        </label>
+        <label>
+          Full article
+          <textarea id="publish-body" rows="10" placeholder="Write your full post here" required></textarea>
+        </label>
+        <button class="btn" type="submit">Publish post</button>
+        <p class="form-note" id="publish-note" hidden>Post published. Opening the blog page...</p>
+        <p class="form-note" id="request-note" hidden>Approval request sent to the admin database. Please wait for the owner to review it.</p>
+      </form>
+    </section>
+
+    <section class="content-block">
+      <p class="section-label">Manage posts</p>
+      <h2>Delete published posts</h2>
+      <p class="helper-text">Only posts published from this browser can be deleted here. Default sample posts stay as part of the template. To approve guest posts, open <a href="admin-requests.php">approval requests</a>.</p>
+      <div class="manage-list" id="manage-post-list"></div>
+      <p class="empty-state" id="manage-empty" hidden>No published posts to delete.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 BrightPath. By Christian V. Tuazon.</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="blog.html">Blog</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('brightpath-theme');
+    if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+    document.querySelectorAll('.theme-toggle').forEach((button) => {
+      const updateToggle = () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.setAttribute('aria-label', isDark ? 'Turn dark mode off' : 'Turn dark mode on');
+        button.querySelector('.toggle-text').textContent = isDark ? 'Light' : 'Dark';
+      };
+      button.addEventListener('click', () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        if (isDark) {
+          delete document.documentElement.dataset.theme;
+          localStorage.setItem('brightpath-theme', 'light');
+        } else {
+          document.documentElement.dataset.theme = 'dark';
+          localStorage.setItem('brightpath-theme', 'dark');
+        }
+        updateToggle();
+      });
+      updateToggle();
+    });
+  </script>
+  <script src="posts-data.js?v=20260607-fast-online"></script>
+  <script>
+    const categoryLabels = {
+      'tech-blog': 'Tech Blog',
+      'gaming-blog': 'Gaming Blog',
+      'travel-blog': 'Travel Blog',
+      'school-tips-blog': 'School Tips Blog',
+      'anime-movie-blog': 'Anime/Movie Blog',
+      'food-blog': 'Food Blog',
+      'personal-diary': 'Personal Diary',
+      'programming-tutorials': 'Programming Tutorials',
+      portfolio: 'Portfolio',
+      writing: 'Writing',
+      ux: 'UX',
+      other: 'Other'
+    };
+
+    document.getElementById('publish-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const title = document.getElementById('publish-title').value.trim();
+      const category = document.getElementById('publish-category').value;
+      const excerpt = document.getElementById('publish-excerpt').value.trim();
+      const body = document.getElementById('publish-body').value.trim();
+      const imageInput = document.getElementById('publish-image');
+      const ownerPasscode = document.getElementById('owner-passcode').value.trim();
+      if (!title || !category || !excerpt || !body) return;
+
+      if (ownerPasscode !== 'admin123@') {
+        const makeSmallerPhoto = (file) => new Promise((resolve) => {
+          if (!file) {
+            resolve(null);
+            return;
+          }
+
+          const image = new Image();
+          const reader = new FileReader();
+          reader.onload = () => {
+            image.onload = () => {
+              const maxSize = 1400;
+              const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.round(image.width * scale);
+              canvas.height = Math.round(image.height * scale);
+              canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+              canvas.toBlob((blob) => {
+                resolve(blob ? new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }) : file);
+              }, 'image/jpeg', 0.82);
+            };
+            image.onerror = () => resolve(file);
+            image.src = reader.result;
+          };
+          reader.onerror = () => resolve(file);
+          reader.readAsDataURL(file);
+        });
+
+        const sendApprovalRequest = async () => {
+          const selectedPhoto = imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
+          const photoForUpload = await makeSmallerPhoto(selectedPhoto);
+          const formData = new FormData();
+          formData.append('title', title);
+          formData.append('category', category);
+          formData.append('categoryLabel', categoryLabels[category]);
+          formData.append('excerpt', excerpt);
+          formData.append('body', body);
+          formData.append('imageName', selectedPhoto ? selectedPhoto.name : 'No photo selected');
+          if (photoForUpload) {
+            formData.append('photo', photoForUpload);
+          }
+
+          const openEmailFallback = () => {
+            const subject = encodeURIComponent(`Blog approval request: ${title}`);
+            const message = encodeURIComponent(
+              `Hello Christian,\n\nI would like to request approval to publish this blog post.\n\nTitle: ${title}\nCategory: ${categoryLabels[category]}\nPhoto: ${selectedPhoto ? selectedPhoto.name : 'No photo selected'}\n\nOpen approval page: ${window.location.origin}/admin-requests.php\n\nPreview:\n${excerpt}\n\nFull article:\n${body}`
+            );
+            window.location.href = `https://mail.google.com/mail/?view=cm&fs=1&to=tuazonc410@gmail.com&su=${subject}&body=${message}`;
+          };
+
+          try {
+            const response = await fetch('api/request-approval.php', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) throw new Error('Request failed');
+            const result = await response.json();
+            document.getElementById('request-note').hidden = false;
+            this.reset();
+            document.getElementById('image-preview').hidden = true;
+            openEmailFallback();
+          } catch (error) {
+            openEmailFallback();
+          }
+        };
+
+        await sendApprovalRequest();
+        return;
+      }
+
+      async function savePost(imageSrc) {
+        const today = new Date();
+        const post = {
+        id: `${BlogStore.slugify(title)}-${Date.now()}`,
+        title,
+        category,
+        categoryLabel: categoryLabels[category],
+        date: today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        readTime: `${Math.max(1, Math.ceil(body.split(/\s+/).length / 180))} min read`,
+        excerpt,
+        image: imageSrc || 'images/post-2.svg',
+        imageAlt: `${title} blog photo`,
+        authorName: 'Christian Tuazon',
+        authorInitials: 'CT',
+        content: [
+          {
+            heading: 'Article',
+            body
+          }
+        ]
+        };
+
+        await BlogStore.savePost(post);
+        document.getElementById('publish-note').hidden = false;
+        setTimeout(() => {
+          window.location.href = 'blog.html';
+        }, 700);
+      }
+
+      if (imageInput.files && imageInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = () => savePost(reader.result);
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
+        savePost('');
+      }
+    });
+
+    async function renderManagePosts() {
+      const list = document.getElementById('manage-post-list');
+      const empty = document.getElementById('manage-empty');
+      const savedPosts = await BlogStore.getSavedPosts();
+      empty.hidden = savedPosts.length !== 0;
+
+      list.innerHTML = savedPosts.map((post) => `
+        <article>
+          <div>
+            <strong>${BlogStore.escape(post.title)}</strong>
+            <p>${BlogStore.escape(post.date)} � ${BlogStore.escape(post.categoryLabel)}</p>
+          </div>
+          <div class="manage-actions">
+            <label class="photo-update">
+              Change photo
+              <input type="file" accept="image/*" data-photo-id="${BlogStore.escape(post.id)}" />
+            </label>
+            <button class="btn" type="button" data-update-photo-id="${BlogStore.escape(post.id)}">Update photo</button>
+            <button class="btn btn-danger" type="button" data-delete-id="${BlogStore.escape(post.id)}">Delete</button>
+          </div>
+        </article>
+      `).join('');
+
+      list.querySelectorAll('[data-update-photo-id]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const passcode = document.getElementById('owner-passcode').value.trim();
+          if (passcode !== 'admin123@') {
+            alert('Enter the owner passcode before updating a post photo.');
+            return;
+          }
+
+          const post = savedPosts.find((item) => item.id === button.dataset.updatePhotoId);
+          const input = Array.from(list.querySelectorAll('[data-photo-id]')).find((item) => item.dataset.photoId === button.dataset.updatePhotoId);
+          if (!post || !input.files || !input.files[0]) {
+            alert('Choose a photo first.');
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = async () => {
+            post.image = reader.result;
+            post.imageAlt = `${post.title} blog photo`;
+            await BlogStore.savePost(post);
+            alert('Photo updated. Refresh the blog page to see it.');
+            renderManagePosts();
+          };
+          reader.readAsDataURL(input.files[0]);
+        });
+      });
+
+      list.querySelectorAll('[data-delete-id]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const passcode = document.getElementById('owner-passcode').value.trim();
+          if (passcode !== 'admin123@') {
+            alert('Enter the owner passcode before deleting a post.');
+            return;
+          }
+
+          await BlogStore.deletePost(button.dataset.deleteId);
+          renderManagePosts();
+        });
+      });
+    }
+
+    document.getElementById('publish-image').addEventListener('change', function() {
+      const preview = document.getElementById('image-preview');
+      const previewImage = document.getElementById('preview-image');
+      if (!this.files || !this.files[0]) {
+        preview.hidden = true;
+        previewImage.removeAttribute('src');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImage.src = reader.result;
+        preview.hidden = false;
+      };
+      reader.readAsDataURL(this.files[0]);
+    });
+
+    renderManagePosts();
+  </script>
+</body>
+</html>
