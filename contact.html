@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | BrightPath Blog</title>
+  <link rel="icon" type="image/jpeg" href= "FullLogo_Transparent_NoBuffer.png" />
+  <link rel="stylesheet" href="styles.css?v=20260606-contact-icons-clean" />
+</head>
+<body class="contact-card-page">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">BrightPath</a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="blog.html">Blog</a>
+        <a href="publish.html">Publish</a>
+        <a class="active" href="contact.html">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Turn dark mode on" aria-pressed="false">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="contact-showcase-wrap">
+    <section class="contact-showcase" aria-labelledby="contact-title">
+      <div class="contact-copy-panel">
+        <p class="contact-pill"><span><img src = "rmail.jpg" alt="Project icon" /></span> Start a Project</p>
+        <h1 id="contact-title">Let's Build Your Digital Future</h1>
+        <p class="contact-lead">Ready to launch your next project? Fill out the form below or reach out directly to start a conversation about your website, blog, or technical needs.</p>
+
+        <div class="contact-methods" aria-label="Contact details">
+          <a href="tel:09511590303"><span><img src = "tele.jpg" alt="Phone icon" /></span> 09511590303</a>
+          <p><span><img src = "loca.png" alt="Location icon" /></span> Rizal, Philippines</p>
+          <a href="mailto:tuazonc410@gmail.com"><span><img src = "rmail.jpg" alt="Email icon" /></span> tuazonc410@gmail.com</a>
+        </div>
+      </div>
+
+      <form class="contact-yellow-form" id="contact-form">
+        <label>
+          Your name
+          <input type="text" name="name" placeholder="Name" required />
+        </label>
+        <label>
+          Your email
+          <input type="email" name="email" placeholder="Email" required />
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="5" placeholder="Write your message" required></textarea>
+        </label>
+        <button type="submit"><span><img src = "submit.jpg" alt="Send icon" /></span> Submit</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 BrightPath. By Christian V. Tuazon.</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="blog.html">Blog</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('brightpath-theme');
+    if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+    document.querySelectorAll('.theme-toggle').forEach((button) => {
+      const updateToggle = () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.setAttribute('aria-label', isDark ? 'Turn dark mode off' : 'Turn dark mode on');
+        button.querySelector('.toggle-text').textContent = isDark ? 'Light' : 'Dark';
+      };
+      button.addEventListener('click', () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        if (isDark) {
+          delete document.documentElement.dataset.theme;
+          localStorage.setItem('brightpath-theme', 'light');
+        } else {
+          document.documentElement.dataset.theme = 'dark';
+          localStorage.setItem('brightpath-theme', 'dark');
+        }
+        updateToggle();
+      });
+      updateToggle();
+    });
+  </script>
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.querySelector('[name="name"]').value.trim();
+      const email = document.querySelector('[name="email"]').value.trim();
+      const message = document.querySelector('[name="message"]').value.trim();
+      if (!name || !email || !message) {
+        alert('Please complete every field before sending.');
+        return;
+      }
+      const subject = encodeURIComponent(`Contact from ${name}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+      window.location.href = `https://mail.google.com/mail/?view=cm&fs=1&to=tuazonc410@gmail.com&su=${subject}&body=${body}`;
+    });
+  </script>
+</body>
+</html>
